@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+
+  <arg name="camera_name" default="camera"/>
+
+  <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" respawn="true" output="screen" ns="$(arg camera_name)">
+        <remap from="left/image_raw"    to="/$(arg camera_name)/left/image_raw"/>
+        <remap from="left/camera_info"  to="/$(arg camera_name)/left/camera_info"/>
+        <remap from="right/image_raw"   to="/$(arg camera_name)/right/image_raw"/>
+        <remap from="right/camera_info" to="/$(arg camera_name)/right/camera_info"/>
+        <param name="min_disparity"           value="1"/>
+        <param name="correlation_window_size" value="20"/>
+  </node>
+  
+  <!--
+  <group ns="$(arg camera_name)">
+    <node pkg="nodelet" type="nodelet" name="depth_nodelet_manager" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="disparity"             args="load stereo_image_proc/disparity depth_nodelet_manager"/>
+    <node pkg="nodelet" type="nodelet" name="depth"                 args="load rtabmap_ros/disparity_to_depth depth_nodelet_manager"/>
+  </group>
+  -->
+
+</launch>

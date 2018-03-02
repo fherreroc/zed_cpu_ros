@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+
+  <arg name="camera_name"          default="camera"/>
+  
+  <node pkg="tf" type="static_transform_publisher" name="static_tf_zed_0" args="0.0  0.0 1.0  0       0     0      world  $(arg camera_name)_link  30"/>
+  <node pkg="tf" type="static_transform_publisher" name="static_tf_zed_1" args="0.0  0.0 0.0 -1.5709  0    -1.5709 $(arg camera_name)_link left_frame  30"/>
+  <node pkg="tf" type="static_transform_publisher" name="static_tf_zed_2" args="0.12 0.0 0.0  0       0     0      left_frame right_frame 30"/> 
+
+</launch>

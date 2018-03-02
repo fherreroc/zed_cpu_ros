@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+
+  <arg name="camera_name" default="camera"/>
+  <arg name="size"   default="8x6"/>
+  <arg name="square" default="0.028"/>
+
+  <node pkg="camera_calibration" type="cameracalibrator.py" name="camera_calibration" output="screen" args="--size $(arg size) --square $(arg square)">
+      <remap from="right" to="/$(arg camera_name)/right/image_raw"/>
+      <remap from="left"  to="/$(arg camera_name)/left/image_raw"/>
+  </node>
+
+</launch>

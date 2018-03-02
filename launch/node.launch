@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+
+  <arg name="device"               default="/dev/video0"/>
+  <arg name="resolution"           default="3"/> <!-- '0': HD2K, '1': HD1080, '2': HD720, '3': VGA -->
+  <arg name="camera_name"          default="camera"/>
+  <arg name="frame_rate"           default="20"/>
+  <arg name="load_zed_config"      default="false"/> <!--false: loads left/right yaml files. true: loads SN....conf-->
+  <arg name="serial"               default="12660"/>
+  <arg name="config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/SN$(arg serial).conf"/>
+  <arg name="left_config_file_location"  default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_left.yaml"/>
+  <arg name="right_config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_right.yaml"/>
+
+  <node pkg="zed_cpu_ros" type="zed_cpu_ros" name="zed_cpu_ros_node" output="screen" ns="$(arg camera_name)" required="true">
+    <param name="device"               value="$(arg device)"/>
+    <param name="resolution"           value="$(arg resolution)"/> 
+    <param name="frame_rate"           value="$(arg frame_rate)"/>
+    <param name="config_file_location" value="$(arg config_file_location)"/>
+    <param name="show_image"           value="false"/>
+    <param name="left_frame_id"        value="left_frame"/>
+    <param name="right_frame_id"       value="right_frame"/>
+    <param name="load_zed_config"      value="$(arg load_zed_config)"/>
+    <param name="left_config_file_location" value="$(arg left_config_file_location)"/>
+    <param name="right_config_file_location" value="$(arg right_config_file_location)"/>
+  </node>
+
+</launch>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- -->
+<launch>
+
+  <arg name="device"               default="/dev/video0"/>
+  <arg name="resolution"           default="2"/> <!-- '0': HD2K, '1': HD1080, '2': HD720, '3': VGA -->
+  <arg name="camera_name"          default="camera"/>
+  <arg name="serial"               default="12660"/>
+  <arg name="frame_rate"           default="20"/>
+  <arg name="load_zed_config"      default="true"/>
+  <arg name="config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/SN$(arg serial).conf"/>
+  <arg name="left_config_file_location"  default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_left.yaml"/>
+  <arg name="right_config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_right.yaml"/>
+
+  <include file="$(find zed_cpu_ros)/launch/node.launch">
+    <arg name="device"               value="$(arg device)"/>
+    <arg name="resolution"           value="$(arg resolution)"/> 
+    <arg name="frame_rate"           value="$(arg frame_rate)"/>
+    <arg name="config_file_location" value="$(arg config_file_location)"/>
+    <arg name="load_zed_config"      value="$(arg load_zed_config)"/>
+    <arg name="left_config_file_location" value="$(arg left_config_file_location)"/>
+    <arg name="right_config_file_location" value="$(arg right_config_file_location)"/>
+  </include>
+
+  <include file="$(find zed_cpu_ros)/launch/calibration.launch">
+    <arg name="camera_name"         value="$(arg camera_name)"/>
+    <arg name="size"                value="8x6"/>
+    <arg name="square"              value="0.028"/>
+  </include>
+
+</launch>

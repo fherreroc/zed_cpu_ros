@@ -19,7 +19,7 @@
 
 namespace arti {
 
-
+ 
 class StereoCamera
 {
 
@@ -31,9 +31,12 @@ public:
 	 * @param[in]  resolution  The resolution
 	 * @param[in]  frame_rate  The frame rate
 	 */
-	StereoCamera(int resolution, double frame_rate): frame_rate_(30.0) {
-
-		camera_ = new cv::VideoCapture(0);
+	StereoCamera(std::string dev, int resolution, double frame_rate): frame_rate_(30.0) {
+                ROS_INFO("Video device=%s",dev.c_str());
+                int d;
+                std::istringstream ( dev ) >> d;
+		camera_ = new cv::VideoCapture(d);
+                //camera_ = new cv::VideoCapture(dev);
 		cv::Mat raw;
 		cv::Mat left_image;
 		cv::Mat right_image;
@@ -41,7 +44,8 @@ public:
 		// // this function doesn't work very well in current Opencv 2.4, so, just use ROS to control frame rate.
 		// setFrameRate(frame_rate);
 
-		std::cout << "Stereo Camera Set Resolution: " << camera_->get(WIDTH_ID) << "x" << camera_->get(HEIGHT_ID) << std::endl;
+                ROS_INFO("Stereo Camera resolution: %gx%g", camera_->get(WIDTH_ID), camera_->get(HEIGHT_ID));
+		//std::cout << "Stereo Camera Set Resolution: " << camera_->get(WIDTH_ID) << "x" << camera_->get(HEIGHT_ID) << std::endl;
 		// std::cout << "Stereo Camera Set Frame Rate: " << camera_->get(FPS_ID) << std::endl;
 	}
 
@@ -56,19 +60,16 @@ public:
 	 * @param[in]  type  The type
 	 */
 	void setResolution(int type) {
-
 		if (type == 0) { width_ = 4416; height_ = 1242;} // 2K
 		if (type == 1) { width_ = 3840; height_ = 1080;} // FHD
 		if (type == 2) { width_ = 2560; height_ = 720;}  // HD
 		if (type == 3) { width_ = 1344; height_ = 376;}  // VGA
-
 		camera_->set(WIDTH_ID, width_);
 		camera_->set(HEIGHT_ID, height_);
 
 		// make sure that the number set are right from the hardware
 		width_ = camera_->get(WIDTH_ID);
 		height_ = camera_->get(HEIGHT_ID);
-
 	}
 
 	/**
@@ -103,6 +104,21 @@ public:
 			return false;
 		}
 	}
+	
+        /**
+         * @brief      Gets the images width and height.
+         *
+         * @param      w  width in pixels
+         * @param      h  height in pixels
+         *
+         * @return     true
+         */
+	bool getSize(double & w, double & h)
+        {
+          w=(double)width_;
+          h=(double)height_;
+          return true;          
+        }
 
 private:
 	cv::VideoCapture* camera_;
@@ -128,16 +144,20 @@ public:
 		ros::NodeHandle nh;
 		ros::NodeHandle private_nh("~");
 		// get ros param
+		private_nh.param("device", device_, std::string("/dev/video0"));
 		private_nh.param("resolution", resolution_, 1);
 		private_nh.param("frame_rate", frame_rate_, 30.0);
-		private_nh.param("config_file_location", config_file_location_, std::string("~/SN1267.conf"));
+		private_nh.param("config_file_location", config_file_location_, std::string("package://zed_cpu_ros/config/SN12660/SN12660.conf"));
 		private_nh.param("left_frame_id", left_frame_id_, std::string("left_camera"));
 		private_nh.param("right_frame_id", right_frame_id_, std::string("right_camera"));
 		private_nh.param("show_image", show_image_, false);
 		private_nh.param("load_zed_config", load_zed_config_, true);
+                private_nh.param("left_config_file_location",  left_config_file_location_,  std::string("package://zed_cpu_ros/config/SN12660/zed_1_left.yaml"));
+                private_nh.param("right_config_file_location", right_config_file_location_, std::string("package://zed_cpu_ros/config/SN12660/zed_1_right.yaml"));
 
 		ROS_INFO("Try to initialize the camera");
-		StereoCamera zed(resolution_, frame_rate_);
+		//StereoCamera zed(resolution_, frame_rate_);
+                zed = new StereoCamera(device_, resolution_, frame_rate_);
 		ROS_INFO("Initialized the camera");
 
 		// setup publisher stuff
@@ -165,22 +185,25 @@ public:
 			}
 		} else {
 			ROS_INFO("Loading from ROS calibration files");
+                        std::stringstream ss;
+                        ss << resolution_;
+                        std::string res = ss.str();
 			// get config from the left, right.yaml in config
 			camera_info_manager::CameraInfoManager info_manager(nh);
 			info_manager.setCameraName("zed/left");
-			info_manager.loadCameraInfo( "package://zed_cpu_ros/config/left.yaml");
+			info_manager.loadCameraInfo("file://"+ left_config_file_location_);
 			left_info = info_manager.getCameraInfo();
 
 			info_manager.setCameraName("zed/right");
-			info_manager.loadCameraInfo( "package://zed_cpu_ros/config/right.yaml");
+			info_manager.loadCameraInfo("file://"+ right_config_file_location_);
 			right_info = info_manager.getCameraInfo();
 
 			left_info.header.frame_id = left_frame_id_;
 			right_info.header.frame_id = right_frame_id_;
 		}
 
-		// std::cout << left_info << std::endl;
-		// std::cout << right_info << std::endl;
+		//std::cout << left_info << std::endl;
+		//std::cout << right_info << std::endl;
 
 		ROS_INFO("Got camera calibration files");
 		// loop to publish images;
@@ -189,7 +212,7 @@ public:
 
 		while (nh.ok()) {
 			ros::Time now = ros::Time::now();
-			if (!zed.getImages(left_image, right_image)) {
+			if (!zed->getImages(left_image, right_image)) {
 				ROS_INFO_ONCE("Can't find camera");
 			} else {
 				ROS_INFO_ONCE("Success, found camera");
@@ -215,6 +238,12 @@ public:
 			// since the frame rate was set inside the camera, no need to do a ros sleep
 		}
 	}
+
+        ~ZedCameraROS()
+        {
+          // std::cout << "Destroy the pointer" << std::endl;
+          delete zed;
+        }
 
 	/**
 	 * @brief      Gets the camera information From Zed config.
@@ -294,7 +323,7 @@ public:
 
 		// Intrinsic camera matrix
 		// 	[fx  0 cx]
-		// K =  [ 0 fy cy]
+		// K =  [ 0 StereoCamerafy cy]
 		//	[ 0  0  1]
 		left_info.K.fill(0.0);
 		left_info.K[0] = l_fx;
@@ -343,6 +372,9 @@ public:
 		right_info.P[5] = r_fy;
 		right_info.P[6] = r_cy;
 		right_info.P[10] = 1.0;
+                
+                this->zed->getSize(width_,height_);
+                width_=width_/2.0;
 
 		left_info.width = right_info.width = width_;
 		left_info.height = right_info.height = height_;
@@ -381,12 +413,16 @@ public:
 	}
 
 private:
+        std::string device_;
 	int resolution_;
 	double frame_rate_;
+        StereoCamera * zed;
 	bool show_image_, load_zed_config_;
 	double width_, height_;
 	std::string left_frame_id_, right_frame_id_;
 	std::string config_file_location_;
+        std::string left_config_file_location_;
+        std::string right_config_file_location_;
 };
 
 }
