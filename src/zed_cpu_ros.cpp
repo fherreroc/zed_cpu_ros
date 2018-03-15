@@ -17,9 +17,6 @@
 #define HEIGHT_ID 4
 #define FPS_ID 5
 
-namespace arti {
-
- 
 class StereoCamera
 {
 
@@ -32,11 +29,15 @@ public:
 	 * @param[in]  frame_rate  The frame rate
 	 */
 	StereoCamera(std::string dev, int resolution, double frame_rate): frame_rate_(30.0) {
-                ROS_INFO("Video device=%s",dev.c_str());
+
+                //ROS_INFO("Video device=%s",dev.c_str());
                 int d;
-                std::istringstream ( dev ) >> d;
+                std::string id = dev.substr( dev.length() - 1 );
+                std::istringstream ( id ) >> d;
+                //ROS_INFO("Device int=%d", d);
 		camera_ = new cv::VideoCapture(d);
                 //camera_ = new cv::VideoCapture(dev);
+
 		cv::Mat raw;
 		cv::Mat left_image;
 		cv::Mat right_image;
@@ -425,13 +426,12 @@ private:
         std::string right_config_file_location_;
 };
 
-}
 
 
 int main(int argc, char **argv) {
     try {
         ros::init(argc, argv, "zed_camera");
-        arti::ZedCameraROS zed_ros;
+        ZedCameraROS zed_ros;
         return EXIT_SUCCESS;
     }
     catch(std::runtime_error& e) {

@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
+        - /TF1/Tree1/camera_link1
         - /Camera2/Visibility1
       Splitter Ratio: 0.546512
     Tree Height: 493
@@ -52,14 +53,12 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: false
+        All Enabled: true
         camera_link:
           Value: true
         left_frame:
           Value: true
         right_frame:
-          Value: true
-        world:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -67,11 +66,10 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          camera_link:
-            left_frame:
-              right_frame:
-                {}
+        camera_link:
+          left_frame:
+            right_frame:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -141,7 +139,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: camera_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -159,22 +157,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10.9064
+      Distance: 11.2786
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.329442
-        Y: 0.0480277
-        Z: 0.509773
+        X: 0
+        Y: 0
+        Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.369797
+      Pitch: 0.375398
       Target Frame: robot/base_footprint
       Value: Orbit (rviz)
-      Yaw: 2.62856
+      Yaw: 3.1604
     Saved: ~
 Window Geometry:
   Camera:
@@ -194,5 +192,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1291
-  X: 55
-  Y: 32
+  X: 247
+  Y: 163
