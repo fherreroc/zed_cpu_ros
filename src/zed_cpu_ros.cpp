@@ -224,10 +224,10 @@ public:
 			}
 
 			if (left_image_pub.getNumSubscribers() > 0) {
-				publishImage(left_image, left_image_pub, "left_frame", now);
+				publishImage(left_image, left_image_pub, left_frame_id_, now);
 			}
 			if (right_image_pub.getNumSubscribers() > 0) {
-				publishImage(right_image, right_image_pub, "right_frame", now);
+				publishImage(right_image, right_image_pub, right_frame_id_, now);
 			}
 			if (left_cam_info_pub.getNumSubscribers() > 0) {
 				publishCamInfo(left_cam_info_pub, left_info, now);

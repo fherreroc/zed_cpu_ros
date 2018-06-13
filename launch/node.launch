@@ -9,6 +9,8 @@
   <arg name="load_zed_config"      default="false"/> <!--false: loads left/right yaml files. true: loads SN....conf-->
   <arg name="serial"               default="12660"/>
   <arg name="config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/SN$(arg serial).conf"/>
+  <arg name="left_frame"           default="left_frame"/>
+  <arg name="right_frame"          default="right_frame"/>
   <arg name="left_config_file_location"  default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_left.yaml"/>
   <arg name="right_config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_right.yaml"/>
 
@@ -18,8 +20,8 @@
     <param name="frame_rate"           value="$(arg frame_rate)"/>
     <param name="config_file_location" value="$(arg config_file_location)"/>
     <param name="show_image"           value="false"/>
-    <param name="left_frame_id"        value="left_frame"/>
-    <param name="right_frame_id"       value="right_frame"/>
+    <param name="left_frame_id"        value="$(arg left_frame)"/>
+    <param name="right_frame_id"       value="$(arg right_frame)"/>
     <param name="load_zed_config"      value="$(arg load_zed_config)"/>
     <param name="left_config_file_location" value="$(arg left_config_file_location)"/>
     <param name="right_config_file_location" value="$(arg right_config_file_location)"/>
