@@ -11,6 +11,7 @@
   <arg name="config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/SN$(arg serial).conf"/>
   <arg name="left_config_file_location"  default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_left.yaml"/>
   <arg name="right_config_file_location" default="$(find zed_cpu_ros)/config/SN$(arg serial)/zed_$(arg resolution)_right.yaml"/>
+  <arg name="rviz" default="false"/>
 
   <include file="$(find zed_cpu_ros)/launch/node.launch">
     <arg name="device"               value="$(arg device)"/>
@@ -39,6 +40,7 @@
   <node pkg="rviz" 
         type="rviz" 
         name="rviz"
+        if="$(arg rviz)"
         args="-d $(find zed_cpu_ros)/rviz/$(arg rviz_config).rviz"/>
 
 
